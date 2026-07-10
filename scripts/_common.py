@@ -13,6 +13,11 @@ _CONFIG_PATH = os.path.join(_SKILL_DIR, 'config.json')
 
 
 def get_base() -> str:
+    if not os.path.exists(_CONFIG_PATH):
+        raise FileNotFoundError(
+            f'config.json이 없습니다: {_CONFIG_PATH}\n'
+            f'→ config.example.json을 config.json으로 복사한 뒤 base_dir 등 값을 채우세요.'
+        )
     with open(_CONFIG_PATH, encoding='utf-8') as f:
         cfg = json.load(f)
     base = cfg.get('base_dir', '').strip()
