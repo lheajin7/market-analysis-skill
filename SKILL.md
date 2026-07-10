@@ -32,6 +32,9 @@ DOCX(워드)** 보고서를 자동 생성합니다.
      하나만 쓰면(`\2`, `\시` 등) JSON 파싱 오류가 난다.
    - `config.json`은 `.gitignore`에 등록되어 있어 각자의 실제 경로가 커밋되지 않는다. 보고서를 바꿀 때도
      이 5개 값만 고치면 된다 (스크립트 코드는 손댈 필요 없음).
+   - 이 복사 단계를 건너뛰어 `config.json`이 없는 상태로 실행하면, `_common.get_base()`가
+     `config.example.json을 config.json으로 복사한 뒤 base_dir 등 값을 채우세요`라는 안내와 함께
+     `FileNotFoundError`로 중단시킨다. 위 복사 단계를 먼저 진행하면 된다.
 
 2. 분석할 보고서 파일을 `base_dir` 아래 `input_file` 경로에 둔다 (`workspace/` 하위 폴더는
    `/market-analysis` 실행 시 자동 생성되므로 미리 만들 필요 없음).
