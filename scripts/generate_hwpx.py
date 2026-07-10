@@ -836,23 +836,26 @@ def build_report(b: HWPXBuilder, md: dict,
         diff = round(opt_cagr - pess_cagr, 1)
         scenario_desc = (f'낙관 시나리오는 연평균 {opt_cagr}%로 비관 시나리오({pess_cagr}%) '
                           f'대비 {diff}%p 높은 성장률을 전망함.')
-    tbl_hdr = ['시나리오', f'기준연도({base_yr})', f'예측연도({fc_yr})', 'CAGR (%)']
-    tbl_row = [
-        ['낙관 (Optimistic)',
-         f'{base_s}' if base_s else '-',
-         f'{sc.get("optimistic",  {}).get("size_usd_b", "?")}',
-         f'{sc.get("optimistic",  {}).get("cagr_pct", "?")}%'],
-        ['현실 (Realistic)',
-         f'{base_s}' if base_s else '-',
-         f'{sc.get("realistic",  {}).get("size_usd_b", "?")}',
-         f'{sc.get("realistic",  {}).get("cagr_pct", cagr)}%'],
-        ['비관 (Pessimistic)',
-         f'{base_s}' if base_s else '-',
-         f'{sc.get("pessimistic", {}).get("size_usd_b", "?")}',
-         f'{sc.get("pessimistic", {}).get("cagr_pct", "?")}%'],
-    ]
-    b.table(tbl_hdr, tbl_row, title='시나리오별 시장규모 전망', desc=scenario_desc,
-            unit=sec1.get('currency_unit', '$B'))
+    # 원문에 시나리오 분석이 없으면(scenarios 비어 있음) 표를 아예 만들지 않는다 —
+    # 예전에는 base_year 값만 채우고 예측연도·CAGR을 '?'로 남겨 오해를 유발했다(실측 확인).
+    if sc:
+        tbl_hdr = ['시나리오', f'기준연도({base_yr})', f'예측연도({fc_yr})', 'CAGR (%)']
+        tbl_row = [
+            ['낙관 (Optimistic)',
+             f'{base_s}' if base_s else '-',
+             f'{sc.get("optimistic",  {}).get("size_usd_b", "?")}',
+             f'{sc.get("optimistic",  {}).get("cagr_pct", "?")}%'],
+            ['현실 (Realistic)',
+             f'{base_s}' if base_s else '-',
+             f'{sc.get("realistic",  {}).get("size_usd_b", "?")}',
+             f'{sc.get("realistic",  {}).get("cagr_pct", cagr)}%'],
+            ['비관 (Pessimistic)',
+             f'{base_s}' if base_s else '-',
+             f'{sc.get("pessimistic", {}).get("size_usd_b", "?")}',
+             f'{sc.get("pessimistic", {}).get("cagr_pct", "?")}%'],
+        ]
+        b.table(tbl_hdr, tbl_row, title='시나리오별 시장규모 전망', desc=scenario_desc,
+                unit=sec1.get('currency_unit', '$B'))
     img('V1_2', '시나리오별 시장규모 전망')
 
     trends = sec1.get('key_trends', [])

@@ -7,6 +7,16 @@
 """
 import json
 import os
+import sys
+
+# Windows 기본 콘솔(cp949)에서 이모지·한글 출력이 UnicodeEncodeError로 죽는 문제 방지.
+# 모든 파이프라인 스크립트가 _common을 import하므로 여기서 한 번만 stdout/stderr을 UTF-8로 맞춘다
+# (PYTHONIOENCODING=utf-8을 매번 지정하지 않아도 되게 함). reconfigure는 Python 3.7+ 제공.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding='utf-8')
+    except (AttributeError, ValueError):
+        pass
 
 _SKILL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _CONFIG_PATH = os.path.join(_SKILL_DIR, 'config.json')

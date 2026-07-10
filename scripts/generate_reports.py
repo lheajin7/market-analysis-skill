@@ -15,6 +15,15 @@ import os
 import subprocess
 import sys
 
+# Windows 기본 콘솔(cp949)에서 이모지·한글 출력이 UnicodeEncodeError로 죽는 문제 방지.
+# 이 스크립트는 _common을 import하지 않으므로(오케스트레이터) 여기서 직접 stdout/stderr을 UTF-8로 맞춘다.
+# (하위 스크립트에는 PYTHONIOENCODING=utf-8 환경변수로 별도 전달 — run() 참고)
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding='utf-8')
+    except (AttributeError, ValueError):
+        pass
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
