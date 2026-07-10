@@ -508,17 +508,20 @@ def build_report(b: DocxBuilder, md: dict, chart_map: dict, meta: dict):
     if pt.get('description') and pt['description'] != '원문 미확인':
         b.h2('특허 동향')
         b.normal(pt['description'])
+        # 지표 라벨/단위는 데이터에 따라 가변 — 기본값은 특허 기준, 다른 지표면 스키마 필드로 덮어쓴다.
+        metric_label = pt.get('metric_label', '특허 출원 건수')
+        metric_unit  = pt.get('metric_unit', '건')
         detail = pt.get('top_companies_detail', [])
         if detail:
-            b.table(['기업', '특허 출원 건수'],
-                    [[d.get('company', ''), f"{d.get('count', 0):,}건"] for d in detail[:6]],
-                    title='기업별 특허 출원 건수')
-        img('V6_2', '기업별 특허 출원 건수',
-            desc='가로축은 기업 간 큰 건수 격차를 비교하기 쉽도록 로그 스케일로 표시함.')
+            b.table(['기업', metric_label],
+                    [[d.get('company', ''), f"{d.get('count', 0):,}{metric_unit}"] for d in detail[:6]],
+                    title=f'기업별 {metric_label}')
+        img('V6_2', f'기업별 {metric_label}',
+            desc='가로축은 기업 간 큰 격차를 비교하기 쉽도록 로그 스케일로 표시함.')
         if pt.get('top_countries'):
-            b.bullet('주요 특허 보유국: ' + ', '.join(pt['top_countries']))
+            b.bullet(pt.get('top_countries_label', '주요 특허 보유국') + ': ' + ', '.join(pt['top_countries']))
         if pt.get('top_companies'):
-            b.bullet('주요 특허 보유 기업: ' + ', '.join(pt['top_companies']))
+            b.bullet(pt.get('top_companies_label', '주요 특허 보유 기업') + ': ' + ', '.join(pt['top_companies']))
 
     cases = sec6.get('case_studies', [])
     if cases:

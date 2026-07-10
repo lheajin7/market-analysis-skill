@@ -974,6 +974,11 @@ def v6_2(sec6: dict, src: str) -> bool:
              '특허 기업별 데이터 없음')
         return False
 
+    # 지표 라벨/단위는 데이터에 따라 가변 — 원문이 특허 건수면 기본값('특허 출원 건수'/'건'),
+    # 파이프라인 자산 수 등 다른 지표면 patent_trend.metric_label/metric_unit로 덮어쓴다.
+    metric_label = pt.get('metric_label', '특허 출원 건수')
+    metric_unit  = pt.get('metric_unit', '건')
+
     top = detail[:8]
     companies = [_wrap_label(d.get('company', ''), 26) for d in top][::-1]
     counts    = [d.get('count', 0) for d in top][::-1]
@@ -983,19 +988,19 @@ def v6_2(sec6: dict, src: str) -> bool:
     bars = ax.barh(companies, counts, color=C['navy'])
     ax.set_xscale('log')
     for b, v in zip(bars, counts):
-        ax.annotate(f'{v:,}건', (b.get_width(), b.get_y() + b.get_height() / 2),
+        ax.annotate(f'{v:,}{metric_unit}', (b.get_width(), b.get_y() + b.get_height() / 2),
                     xytext=(6, 0), textcoords='offset points',
                     va='center', fontsize=mpl_pt('data_label', FIG_W))
 
-    ax.set_xlabel('출원 건수 (로그 스케일)', fontsize=mpl_pt('axis_label', FIG_W))
+    ax.set_xlabel(f'{metric_label} (로그 스케일)', fontsize=mpl_pt('axis_label', FIG_W))
     ax.set_facecolor(C['light_bg'])
     ax.grid(axis='x', alpha=0.3, which='both')
     _style_axes(ax, FIG_W)
     plt.tight_layout()
     _savefig('V6_2_patent_countries.png')
     _reg('V6_2', 'V6_2_patent_countries.png', 6,
-         '기업별 특허 출원 건수',
-         f'기업별 특허 출원 건수 (출처: {src})', 'generated')
+         f'기업별 {metric_label}',
+         f'기업별 {metric_label} (출처: {src})', 'generated')
     return True
 
 

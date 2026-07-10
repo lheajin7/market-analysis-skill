@@ -251,7 +251,11 @@ sec6_rnd_trends.json  → ["rnd_trends"]
     "description": "2~3줄 요약",
     "top_countries": ["국가1", "국가2", ...],
     "top_companies": ["기업1", "기업2", ...],
-    "top_companies_detail": [{"company": "기업1", "count": 12345}, ...]
+    "top_companies_detail": [{"company": "기업1", "count": 12345}, ...],
+    "metric_label": "특허 출원 건수",   // (선택) 표 헤더·차트 라벨·제목에 쓰이는 지표명. 생략 시 기본 '특허 출원 건수'
+    "metric_unit": "건",                 // (선택) 수치 뒤 단위. 생략 시 기본 '건'
+    "top_countries_label": "주요 특허 보유국",     // (선택) 국가 목록 불릿 라벨. 생략 시 기본값
+    "top_companies_label": "주요 특허 보유 기업"    // (선택) 기업 목록 불릿 라벨. 생략 시 기본값
   },
   "case_studies": [{"organization": "기관/기업", "title": "사례명", "technology": "기술", "outcome": "결과"}],
   "government_initiatives": [{"region": "권역", "initiative": "정책명", "description": "설명"}],
@@ -265,6 +269,12 @@ sec6_rnd_trends.json  → ["rnd_trends"]
   수치를 알 수 없으면 `top_companies`(이름만)만 채우고 `top_companies_detail`은 생략 — 없는
   수치를 지어내지 말 것. `top_countries`/`top_companies`(이름만)는 항상 본문에 "주요 특허
   보유국/보유 기업" 불릿으로 별도 표시되므로, 표/그래프에 안 쓰는 쪽도 이름 목록만은 채워둘 것.
+※ **원문 지표가 '특허 출원 건수'가 아니면 `metric_label`/`metric_unit`으로 표 헤더·차트 라벨을
+  바꿀 것 (하드코딩 아님).** 예: 원문이 특허가 아니라 'ADC 개발 파이프라인 보유 자산 수'를 기업별로
+  제시하면 `metric_label`="개발 파이프라인 자산 수", `metric_unit`="개"로 채운다 — 그러면 표 헤더·차트
+  x축·제목이 모두 그 지표명으로 바뀐다. 국가/기업 불릿 라벨도 `top_countries_label`/
+  `top_companies_label`로 덮어쓸 수 있다(예: "주요 개발 보유국"). 네 필드 모두 생략하면 기본값(특허
+  기준)이 그대로 쓰이므로, 원문이 실제 특허 데이터인 보고서에서는 채우지 않아도 된다.
 ※ **`case_studies`/`government_initiatives`/`emerging_technologies`는 위 스키마의 필드명을
   정확히 지킬 것 — `title`/`description`만 쓰는 실수가 두 차례 반복됐다(실측 확인).** 각각의
   올바른 필드는 `case_studies`={`organization`, `title`, `technology`, `outcome`},
