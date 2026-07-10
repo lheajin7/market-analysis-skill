@@ -22,7 +22,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$SCRIPTS = "D:\2ndHDD\260415 Claude Code 강의\260520 기획지원서비스 AX\기획지원 자동화\1. 시장분석\skill\scripts"
+$SCRIPTS = Join-Path $PSScriptRoot 'scripts'
 $START   = Get-Date
 
 function Step($n, $label, $cmd) {
