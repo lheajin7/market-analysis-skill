@@ -75,6 +75,39 @@ Claude Code에서:
 
 ---
 
+## 원격 저장소 (클론 · 저장)
+
+이 스킬은 GitHub 원격 저장소로 관리됩니다: **https://github.com/lheajin7/market-analysis-skill**
+
+### 내려받기 (클론)
+
+```bash
+git clone https://github.com/lheajin7/market-analysis-skill.git ~/.claude/skills/market-analysis
+```
+
+### 변경사항 저장하기 (커밋 · 푸시)
+
+스킬을 수정한 뒤 원격 저장소에 반영하려면:
+
+```bash
+cd ~/.claude/skills/market-analysis
+git add -A
+git commit -m "변경 내용 요약"
+git push
+```
+
+> **주의:** `config.json`은 `.gitignore`에 등록되어 있어 `git add -A`를 해도 커밋되지 않습니다.
+> 각자의 실제 경로·과제명 등 개인 설정이 원격에 올라가지 않으므로, 안심하고 `git add -A`를 사용해도 됩니다.
+
+새 PC를 처음 연결할 때는 최초 1회 사용자 정보를 설정합니다:
+
+```bash
+git config user.name  "이름"
+git config user.email "메일주소"
+```
+
+---
+
 ## 실행 흐름
 
 ```
