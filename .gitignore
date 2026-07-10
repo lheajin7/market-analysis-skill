@@ -1,0 +1,30 @@
+# 사용자별 설정 (실제 경로·과제명 등 개인정보 포함 — config.example.json을 복사해 사용)
+config.json
+
+# 생성물 (보고서 결과물 — 원본 보고서 내용 포함 가능)
+output/*.docx
+output/*.hwpx
+output/*.hwp
+output/*.pdf
+output/*_실행리포트.md
+
+# Python 캐시
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# 환경
+.env
+*.env
+.venv
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 편집기
+.vscode/
+.idea/

@@ -1,0 +1,8 @@
+pdfplumber
+olefile
+pyhwp
+lxml
+matplotlib
+Pillow
+numpy
+python-docx

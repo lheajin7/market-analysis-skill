@@ -1,0 +1,8 @@
+{
+  "_comment": "이 파일을 config.json으로 복사한 뒤 아래 5개 값을 본인 환경에 맞게 수정하세요 (base_dir은 슬래시 '/' 사용 권장 — 역슬래시는 JSON에서 '\\\\'로 이스케이프해야 함).",
+  "input_file": "report.pdf",
+  "tech_field": "기술분야명 (예: 데이터센터 냉각)",
+  "project_name": "과제명 (예: OOO 기술개발 시장분석)",
+  "output_name": "시장분석_기술분야 (예: 시장분석_데이터센터냉각)",
+  "base_dir": "C:/Users/your-name/market-analysis-projects/project1"
+}
