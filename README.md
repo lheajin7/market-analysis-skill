@@ -56,6 +56,10 @@ cp config.example.json config.json
 `config.json`은 `.gitignore`에 등록되어 있어, 각자의 실제 경로가 실수로 커밋되지 않습니다. 새 보고서로
 바꿀 때도 이 파일 5개 값만 고치면 됩니다 — 스크립트 코드는 건드릴 필요 없습니다.
 
+> 이 단계를 건너뛰어 `config.json`이 없는 상태로 실행하면, 스크립트가
+> `config.example.json을 config.json으로 복사한 뒤 base_dir 등 값을 채우세요`라는
+> 안내와 함께 중단됩니다. 위 복사 단계를 먼저 진행하세요.
+
 분석할 보고서 파일은 `base_dir` 아래 `input_file` 경로에 두면 됩니다 (`workspace/` 하위 폴더는
 실행 시 자동 생성됩니다).
 
