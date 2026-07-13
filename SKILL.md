@@ -1,3 +1,9 @@
+---
+name: market-analysis
+description: "영문 시장조사 보고서(PDF/HWP/HWPX/DOCX)를 분석해 7개 섹션 + 최대 13개 차트(공급망·가치사슬·생태계 맵 포함)가 담긴 한글 개조식 HWPX(한컴오피스)·DOCX(워드) 보고서를 자동 생성. 텍스트/이미지 추출 → Claude 직접 분석 → 차트 생성 → 문서 생성 → 검증 → 배포 7단계 파이프라인. 트리거: '시장분석', '시장보고서 요약', '마켓 리포트', 'market analysis', 'market-analysis'."
+user-invocable: true
+---
+
 # market-analysis — 시장분석 보고서 자동요약 스킬
 
 영문 시장조사 보고서(PDF/HWP/HWPX/DOCX)를 입력받아
