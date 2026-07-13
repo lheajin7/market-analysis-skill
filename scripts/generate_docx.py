@@ -24,7 +24,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn as docx_qn
 from PIL import Image as PILImage
 
-from _common import get_base
+from _common import get_base, seg_title
 
 # 개조식 문단 1개당 최대 5줄(약 200자)을 넘지 않도록 분할한다.
 MAX_PARA_CHARS = 200
@@ -416,12 +416,16 @@ def build_report(b: DocxBuilder, md: dict, chart_map: dict, meta: dict):
         top3 = ms[:3]
         top3_txt = ', '.join(f"{r.get('company','')}({r.get('share_range','')})" for r in top3)
         n_frag = max(0, len(ms) - 3)
-        b.table(['기업명', '시장점유율 범위'],
+        # 점유율 지표명·해석 문장은 데이터에서 덮어쓸 수 있다 — 기본 해석문은 "다수의 소규모
+        # 기업이 1% 미만을 나눠 갖는 파편화 시장"을 전제하므로, 소수 기업만 존재하는 과점
+        # 시장 데이터에 그대로 쓰면 사실과 다른 문장이 된다(generate_hwpx.py와 동일).
+        default_desc = (f'상위 3개 기업({top3_txt})이 점유율 상위권을 형성하며, 나머지 {n_frag}여 개 '
+                        f'기업 대부분은 1% 미만의 점유율을 보여 파편화된 경쟁구조를 나타냄. 소수 '
+                        f'선도기업의 시장 지배력과 다수 틈새 기술기업 간 경쟁이 공존하는 구조임.')
+        b.table(['기업명', sec3.get('market_share_metric', '시장점유율 범위')],
                 [[r.get('company', ''), r.get('share_range', '')] for r in ms[:10]],
                 title='경쟁구도 (Competitive Landscape)',
-                desc=(f'상위 3개 기업({top3_txt})이 점유율 상위권을 형성하며, 나머지 {n_frag}여 개 '
-                      f'기업 대부분은 1% 미만의 점유율을 보여 파편화된 경쟁구조를 나타냄. 소수 '
-                      f'선도기업의 시장 지배력과 다수 틈새 기술기업 간 경쟁이 공존하는 구조임.'))
+                desc=sec3.get('market_share_desc') or default_desc)
 
     nm = sec3.get('notable_movements', '')
     if nm and nm != '원문 미확인':
@@ -481,8 +485,7 @@ def build_report(b: DocxBuilder, md: dict, chart_map: dict, meta: dict):
     for i, cid in enumerate(MAIN_SLOTS):
         axis = sec5.get('axes', [])[i] if i < len(sec5.get('axes', [])) else {}
         if axis.get('segments'):
-            label = axis.get('label', f'세그먼트{i+1}')
-            seg_section(f'{label} 시장규모', cid, axis)
+            seg_section(seg_title(axis, f'세그먼트{i+1}'), cid, axis)
 
     DETAIL_SLOTS = ['V5_5_air_sub', 'V5_6_liquid_dir', 'V5_7_immersion']
     for i, cid in enumerate(DETAIL_SLOTS):
@@ -506,7 +509,9 @@ def build_report(b: DocxBuilder, md: dict, chart_map: dict, meta: dict):
 
     pt = sec6.get('patent_trend', {})
     if pt.get('description') and pt['description'] != '원문 미확인':
-        b.h2('특허 동향')
+        # 절 제목도 지표에 맞춰 바뀔 수 있다(generate_hwpx.py와 동일) — 원문이 특허가 아닌
+        # 다른 지표를 제시하면 section_title로 덮어쓴다(기본값은 특허 기준).
+        b.h2(pt.get('section_title', '특허 동향'))
         b.normal(pt['description'])
         # 지표 라벨/단위는 데이터에 따라 가변 — 기본값은 특허 기준, 다른 지표면 스키마 필드로 덮어쓴다.
         metric_label = pt.get('metric_label', '특허 출원 건수')

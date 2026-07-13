@@ -25,7 +25,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 warnings.filterwarnings('ignore')
 
-from _common import get_base
+from _common import get_base, seg_title, value_label
 
 # ──────────────────────────────────────────────────────────────────
 # 경로 상수
@@ -881,7 +881,10 @@ def v5_segment(chart_id: str, title: str, seg_data: dict,
                     rotation=90 if rotate else 0)
 
     ax.set_xlabel('연도', fontsize=mpl_pt('axis_label', FIG_W))
-    ax.set_ylabel(f'시장규모 ({unit})', fontsize=mpl_pt('axis_label', FIG_W))
+    # y축 지표명은 축 데이터에서 덮어쓸 수 있다 — 세그먼트 값이 시장규모가 아니라
+    # 자본 약정액·투자액 등인 보고서에서 '시장규모'로 고정 표기하면 사실과 다르다.
+    ax.set_ylabel(f'{value_label(seg_data)} ({unit})',
+                  fontsize=mpl_pt('axis_label', FIG_W))
     ax.set_xticks(x)
     ax.set_xticklabels([str(y) for y in years])
     ax.set_facecolor(C['light_bg'])
@@ -1063,7 +1066,8 @@ def main():
         axis = axes[i] if i < len(axes) else {}
         label = axis.get('label', f'세그먼트{i+1}')
         if axis.get('segments'):
-            v5_segment(cid, f'{label} 시장규모 ({unit})', axis, years, src, fn, unit)
+            v5_segment(cid, f'{seg_title(axis, f"세그먼트{i+1}")} ({unit})',
+                       axis, years, src, fn, unit)
         else:
             _reg(cid, f'{cid}.png', 5, label, '', 'skipped', '세그먼트 데이터 없음')
 
@@ -1076,7 +1080,8 @@ def main():
         if not segs or not isinstance(segs[0], dict):
             _reg(cid, f'{cid}.png', 5, label, '', 'skipped', '세부 세그먼트 없음')
         else:
-            v5_segment(cid, f'{label} 시장규모 ({unit})', axis, years, src, fn, unit)
+            v5_segment(cid, f'{seg_title(axis, f"세부분류{i+1}")} ({unit})',
+                       axis, years, src, fn, unit)
 
     # ── V6: 채택률 추이 / 특허 동향 ───────────────────────────────
     print('  [V6] 채택률 추이 차트...')
