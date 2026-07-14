@@ -985,7 +985,7 @@ def build_report(b: HWPXBuilder, md: dict,
         detail_axes = sec5.get('detail_axes', [])
         axis = detail_axes[i] if i < len(detail_axes) else {}
         if axis.get('segments'):
-            seg_section(axis.get('label', f'세부분류{i+1}'), cid, axis)
+            seg_section(seg_title(axis, f'세부분류{i+1}'), cid, axis)
 
     # ── 섹션 6: R&D 및 기술 동향 ─────────────────────────────────
     b.h1('6. R&D 및 기술 동향')
