@@ -7,6 +7,55 @@
 
 ---
 
+## 🚀 새 PC 셋업 (5분)
+
+```bash
+# 1. 스킬 클론
+git clone https://github.com/lheajin7/market-analysis-skill.git ~/.claude/skills/market-analysis
+cd ~/.claude/skills/market-analysis
+
+# 2. 패키지 설치
+pip install -r requirements.txt
+
+# 3. 설정 파일 생성 (⚠️ 필수 — config.json은 저장소에 없습니다)
+cp config.example.json config.json
+```
+
+**4.** `config.json`을 열어 5개 값을 본인 환경에 맞게 수정합니다:
+
+```json
+{
+  "input_file":   "report.pdf",
+  "tech_field":   "이차전지",
+  "project_name": "이차전지 기술개발 시장분석",
+  "output_name":  "시장분석_이차전지",
+  "base_dir":     "C:/Users/본인계정/my-projects/battery"
+}
+```
+
+**5.** 분석할 보고서를 `base_dir` 아래 `input_file` 경로에 두고, Claude Code에서 실행:
+
+```
+/market-analysis
+```
+
+끝입니다. `workspace/`와 `skill/output/` 폴더는 실행 시 자동 생성되며, 결과물 `.hwpx`·`.docx`가
+`skill/output/`에 저장됩니다.
+
+### 셋업 시 자주 걸리는 3가지
+
+| 증상 | 원인 | 해결 |
+|------|------|------|
+| `FileNotFoundError: config.json이 없습니다` | 3단계를 건너뜀 | `cp config.example.json config.json` |
+| `❌ 지원하지 않는 형식: md` | **입력은 PDF·HWP·HWPX·DOCX 4종만 지원** | 원문을 PDF나 DOCX로 변환 |
+| JSON 파싱 오류 | `base_dir`에 역슬래시(`\`)를 하나만 씀 | 슬래시(`/`) 사용 권장. 역슬래시는 `\\`로 이스케이프 |
+
+> **`config.json`은 저장소에 커밋되지 않습니다** (`.gitignore` 등록). 각자의 실제 경로·과제명이
+> 원격에 올라가지 않으므로, PC마다 이 파일만 따로 만들어 쓰면 됩니다. 코드·문서·한글 폰트는
+> 저장소에서 그대로 공유됩니다 — 나눔고딕이 동봉되어 있어 폰트 설치도 불필요합니다.
+
+---
+
 ## 주요 기능
 
 - 어떤 보고서든 OK: PDF, HWP, HWPX, DOCX 모두 지원합니다.
@@ -24,50 +73,25 @@
 
 ---
 
-## 설치 방법
+## config.json 설정값 상세
 
-### 1단계: 스킬 복사
-
-```bash
-git clone https://github.com/lheajin7/market-analysis-skill.git ~/.claude/skills/market-analysis
-```
-
-### 2단계: Python 패키지 설치
-
-```bash
-cd ~/.claude/skills/market-analysis
-pip install -r requirements.txt
-```
-
-### 3단계: 설정 파일 준비
-
-```bash
-cp config.example.json config.json
-```
-
-`config.json`을 열어 아래 5개 값을 본인 환경에 맞게 수정합니다 (`base_dir`은 슬래시 `/` 사용 권장 —
-역슬래시를 쓰려면 JSON 규칙상 `\\`로 이스케이프해야 합니다):
+위 셋업 4단계에서 채우는 5개 값입니다. 새 보고서로 바꿀 때도 이 값들만 고치면 됩니다 —
+스크립트 코드는 건드릴 필요 없습니다.
 
 | 항목 | 설명 |
 |------|------|
-| `input_file` | 분석할 보고서 경로 (`base_dir` 기준 상대경로) |
+| `input_file` | 분석할 보고서 경로 (`base_dir` 기준 **상대경로**). PDF·HWP·HWPX·DOCX만 지원 |
 | `tech_field` | 기술분야명 — 보고서 제목·섹션 제목에 사용됨 |
 | `project_name` | 과제명 — 표지에 표시됨 |
 | `output_name` | 출력 파일명 (예: `시장분석_데이터센터냉각`) |
 | `base_dir` | 프로젝트 루트 폴더 (보고서 파일과 `workspace/`, `skill/output/`이 여기 생성됨) |
 
-`config.json`은 `.gitignore`에 등록되어 있어, 각자의 실제 경로가 실수로 커밋되지 않습니다. 새 보고서로
-바꿀 때도 이 파일 5개 값만 고치면 됩니다 — 스크립트 코드는 건드릴 필요 없습니다.
+`input_file`은 `base_dir` 기준 상대경로이므로 아래 둘 다 유효합니다:
 
-> **입력 형식은 PDF · HWP · HWPX · DOCX 4종만 지원합니다.** `.md`/`.txt` 등을 지정하면 텍스트 추출
-> 단계에서 `지원하지 않는 형식`으로 중단됩니다. 다른 형식의 원문은 먼저 PDF나 DOCX로 변환하세요.
-
-> 이 단계를 건너뛰어 `config.json`이 없는 상태로 실행하면, 스크립트가
-> `config.example.json을 config.json으로 복사한 뒤 base_dir 등 값을 채우세요`라는
-> 안내와 함께 중단됩니다. 위 복사 단계를 먼저 진행하세요.
-
-분석할 보고서 파일은 `base_dir` 아래 `input_file` 경로에 두면 됩니다 (`workspace/` 하위 폴더는
-실행 시 자동 생성됩니다).
+```json
+"input_file": "report.pdf"                    // base_dir 바로 아래
+"input_file": "workspace/input/report.pdf"    // 하위 폴더 안
+```
 
 ---
 
