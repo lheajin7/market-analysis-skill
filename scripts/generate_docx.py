@@ -2,7 +2,7 @@
 """
 STEP 5: 한글 보고서 본문 생성 (DOCX 조립)
 
-사전 조건: analyze_sections.py + generate_charts.py 실행 완료
+사전 조건: STEP 3(master_dataset.json) + generate_charts.py 실행 완료
 
 사용법:
   python generate_docx.py

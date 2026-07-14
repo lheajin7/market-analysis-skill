@@ -2,7 +2,7 @@
 """
 STEP 4: 차트 및 인포그래픽 생성 (matplotlib + Pillow)
 
-사전 조건: analyze_sections.py 실행 완료 (master_dataset.json 존재)
+사전 조건: STEP 3 완료 (structured/master_dataset.json 존재)
 
 사용법:
   python generate_charts.py
@@ -1016,7 +1016,7 @@ def main():
 
     master_path = os.path.join(STRUCTURED, 'master_dataset.json')
     if not os.path.exists(master_path):
-        print('master_dataset.json 없음 — analyze_sections.py를 먼저 실행하세요.')
+        print('master_dataset.json 없음 — STEP 3(구조화 JSON 작성)를 먼저 수행하세요.')
         sys.exit(1)
 
     with open(master_path, encoding='utf-8') as f:

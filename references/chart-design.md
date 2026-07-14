@@ -5,6 +5,9 @@
 
 출력: `workspace/charts/*.png`, `chart_catalog.json`
 
+**컬러 팔레트** (`generate_charts.py`의 `PALETTE`/`C`):
+mint `#2EC4B6` / navy `#1A3A5C` / green `#4CAF50` / orange `#FF7043` / gray `#90A4AE`
+
 ---
 
 ## 1. 폰트 크기는 `mpl_pt()`/`pil_pt()`로 역산한다 (하드코딩 금지)

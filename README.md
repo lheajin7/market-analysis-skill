@@ -172,7 +172,6 @@ market-analysis/
     ├── _common.py               # config.json → base_dir 로더 + 세그먼트 제목/지표명 규칙 (공용)
     ├── extract_input.py         # 텍스트 추출 (STEP 1+2)
     ├── extract_images.py        # 이미지 추출 (STEP 1+2)
-    ├── analyze_sections.py      # 규칙 기반 자동 분석 — 빠른 초안용, 정밀 보고서엔 미권장 (STEP 3 대안)
     ├── generate_charts.py       # 차트 생성 (STEP 4)
     ├── generate_hwpx.py         # HWPX 생성 (STEP 5)
     ├── generate_docx.py         # DOCX 생성 (STEP 5)

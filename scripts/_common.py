@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """공용 헬퍼: config.json의 base_dir을 읽어 프로젝트 루트 경로를 반환한다.
 
-모든 파이프라인 스크립트(analyze_sections.py, extract_input.py 등)는
+모든 파이프라인 스크립트(extract_input.py, generate_charts.py 등)는
 이 함수로 BASE를 계산해, 폴더나 입력 보고서가 바뀌어도 config.json 값만
 수정하면 재사용할 수 있도록 한다.
 """

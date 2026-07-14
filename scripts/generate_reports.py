@@ -2,7 +2,7 @@
 """
 STEP 5+6: HWPX·DOCX 보고서를 모두 생성하고 각각 검증한다.
 
-사전 조건: analyze_sections.py + generate_charts.py 실행 완료
+사전 조건: STEP 3(master_dataset.json) + generate_charts.py 실행 완료
 
 사용법:
   python generate_reports.py

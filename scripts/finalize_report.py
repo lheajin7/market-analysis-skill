@@ -148,11 +148,10 @@ def generate_report(logs: dict, output_name: str, tf: str,
     leading = reg.get('leading_region', 'N/A')
     fastest = reg.get('fastest_growing_region', 'N/A')
 
-    # STEP 3는 (분석 정밀도를 위해) Claude Code가 워크스페이스 텍스트를 직접 읽어
-    # master_dataset.json을 작성하는 방식이 기본이며, 이 경로에는 step3_analysis.json
-    # 로그가 남지 않는다(그 로그는 초안용 analyze_sections.py 전용). 따라서 완료 섹션
-    # 수는 그 로그가 아니라 실제로 병합된 master_dataset.json의 7개 최상위 섹션 키
-    # 존재 여부로 직접 판정한다.
+    # STEP 3는 Claude Code가 워크스페이스 텍스트를 직접 읽어 master_dataset.json을
+    # 작성하므로 step3_analysis.json 로그가 남지 않는다. 따라서 완료 섹션 수는 로그가
+    # 아니라 실제로 병합된 master_dataset.json의 7개 최상위 섹션 키 존재 여부로 판정한다.
+    # (logs['s3']는 없으면 {}가 되고, 소요시간 표시에만 쓰이므로 비어도 무방하다.)
     SECTION_KEYS = ['market_overview', 'market_dynamics', 'ecosystem',
                      'regional_analysis', 'segmentation', 'rnd_trends', 'implications']
     sec_done = sum(1 for k in SECTION_KEYS if md.get(k))

@@ -31,39 +31,16 @@ SKILL.md는 **실행 흐름**만 담는다. 상세 규칙은 필요한 시점에
 
 ---
 
-## 실행 전 준비 (최초 1회, PC마다)
+## 전제 조건 (실행 실패 시 확인)
 
-1. `config.example.json`을 `config.json`으로 복사한 뒤 5개 값을 수정:
+사용자 셋업(클론·`pip install`·`config.json` 생성)은 README에 있다. 실행 중 아래 오류가 나면
+사용자에게 해당 조치를 안내할 것.
 
-```json
-{
-  "input_file": "report.pdf",
-  "tech_field": "기술분야명 (예: 데이터센터 냉각)",
-  "project_name": "과제명",
-  "output_name": "시장분석_기술분야",
-  "base_dir": "C:/Users/본인계정/원하는/프로젝트/폴더"
-}
-```
-
-   - `base_dir`은 **슬래시(`/`)** 사용을 권장한다. 역슬래시(`\`)를 쓰려면 JSON 규칙상 `\\`로
-     이스케이프해야 하며, 하나만 쓰면(`\2`, `\시` 등) JSON 파싱 오류가 난다.
-   - `config.json`은 `.gitignore`에 등록되어 있어 각자의 실제 경로가 커밋되지 않는다. 보고서를 바꿀
-     때도 이 5개 값만 고치면 된다 (스크립트 코드는 손댈 필요 없음).
-   - `config.json` 없이 실행하면 `_common.get_base()`가 안내 메시지와 함께 `FileNotFoundError`로
-     중단시킨다 — 위 복사 단계를 먼저 진행하면 된다.
-
-2. 분석할 보고서 파일을 `base_dir` 아래 `input_file` 경로에 둔다 (`workspace/` 하위 폴더는
-   `/market-analysis` 실행 시 자동 생성되므로 미리 만들 필요 없음).
-
-   - **입력은 PDF·HWP·HWPX·DOCX 4종만 지원한다.** `.md`/`.txt` 등 다른 형식을 넣으면
-     `extract_input.py`가 STEP 2에서 `지원하지 않는 형식: {ext}`를 출력하고 exit 1로 중단한다
-     (`subprocess.run(..., check=True)`가 이를 잡아 파이프라인이 즉시 멈추므로, 옛 데이터로
-     잘못된 보고서가 생성될 위험은 없다). 다른 형식의 원문은 먼저 PDF/DOCX로 변환할 것.
-
-3. Python 패키지 설치: `pip install -r requirements.txt`
-
-나눔고딕 폰트는 `scripts/assets/NanumGothic.ttf`로 저장소에 동봉되어 있어 별도 설치 없이 어떤
-PC에서도 차트에 한글이 정상 표시된다.
+| 오류 | 원인 | 사용자에게 안내할 것 |
+|---|---|---|
+| `FileNotFoundError: config.json이 없습니다` | 셋업 미완료 | `cp config.example.json config.json` 후 5개 값 입력 |
+| `❌ 지원하지 않는 형식: {ext}` | **입력은 PDF·HWP·HWPX·DOCX 4종만 지원** | 원문을 PDF/DOCX로 변환 (exit 1로 중단되므로 잘못된 보고서가 생성될 위험은 없음) |
+| `PermissionError` (STEP 7) | 결과 파일이 한글/워드에서 열려 있음 | 프로그램을 닫고 `finalize_report.py`만 재실행 |
 
 ---
 
@@ -123,7 +100,6 @@ subprocess.run(["python", os.path.join(skill_dir, "scripts", "extract_images.py"
 - 문체는 개조식/음슴체(`~임`, `~함`, `~됨`), 문단당 5줄(약 200자) 이내
 - 수치는 원문 그대로, 기업명·기술명은 영문 원어 병기
 - 공급망·가치사슬·생태계 맵은 **원문 그림이 있으면 `*_image` 필드로 재활용**하고, 없을 때만 합성
-- `scripts/analyze_sections.py`(정규식 자동 분석)는 초안용일 뿐 — 정밀 보고서에는 쓰지 말 것
 
 생성 파일: `workspace/structured/sec1_market_overview.json` ~ `sec7_implications.json`,
 `master_dataset.json`
@@ -181,41 +157,15 @@ subprocess.run(["python", os.path.join(skill_dir, "scripts", "finalize_report.py
 
 ---
 
-## 다른 PC·다른 보고서에서 재사용하기 (이식성)
+## 이 스킬을 수정할 때 지킬 것 (하드코딩 금지)
 
-리포지토리를 클론한 뒤 `config.json`만 채우면 **다른 PC·다른 보고서에서도 동일한 구성**(7개 섹션,
-경쟁구도·특허 동향 표+그림, 5줄 이내 개조식 문체, 글씨 겹침 없는 HWPX)의 보고서가 나온다.
+어떤 산업의 보고서를 넣어도 같은 품질이 나오도록 아래 3가지는 코드에 박아넣지 않는다.
 
-- **경로 하드코딩 없음**: 모든 스크립트가 `_common.get_base()`로 `config.json`의 `base_dir`을 읽는다.
-- **폰트 동봉**: `scripts/assets/NanumGothic.ttf`가 저장소에 포함되어 있어, 시스템에 나눔고딕이 없는
-  PC에서도 차트에 한글이 깨지지 않는다.
-- **세그먼트 축·지표명 하드코딩 없음**: STEP 3에서 채우는 `segmentation.axes[].label`과
-  `value_label`이 그대로 절 제목·차트 축에 쓰이므로(`_common.seg_title()`), 전혀 다른 산업의
-  보고서(배터리·반도체 등)를 넣어도 "데이터센터 유형별" 같은 엉뚱한 제목이 남지 않는다.
-- **분석 로직은 Claude가 매번 수행**: STEP 3는 스크립트가 아니라 Claude Code가 스키마에 맞춰 원문을
-  읽고 채우므로, 어떤 보고서든 같은 스키마·같은 품질 규칙이 적용된다. **다만 보고서 내용 자체(구체적
-  수치·사례)는 원문에 따라 달라지는 것이 정상이다** — "동일한 프레임"은 구조·문체·검증 기준이
-  동일하다는 뜻이다.
+- **경로**: 모든 스크립트가 `_common.get_base()`로 `config.json`의 `base_dir`을 읽는다.
+- **세그먼트 축·지표명**: STEP 3가 채운 `segmentation.axes[].label`/`value_label`이 그대로 절 제목·
+  차트 축이 된다(`_common.seg_title()`). 특정 보고서의 분류축 이름(예: "데이터센터 유형별")을 코드에
+  쓰지 말 것.
+- **통화 단위**: `sec1.currency_unit`을 읽어 쓴다. `'$B'`를 문자열로 박지 말 것.
 
-새 PC 체크리스트:
-1. `git clone` → `~/.claude/skills/market-analysis`
-2. `pip install -r requirements.txt`
-3. `cp config.example.json config.json` 후 5개 값 수정 (`base_dir`은 슬래시 `/` 권장)
-4. 분석할 보고서를 `base_dir/input_file` 경로에 배치
-5. Claude Code에서 `/market-analysis` 실행
-
----
-
-## 필요 패키지
-
-```bash
-pip install -r requirements.txt
-```
-
-(`pdfplumber`, `olefile`, `pyhwp`, `lxml`, `matplotlib`, `Pillow`, `numpy`, `python-docx`)
-
-선택: `poppler` — PDF 이미지 추출 품질 향상 시 필요.
-
-## 컬러 팔레트
-
-mint `#2EC4B6` / navy `#1A3A5C` / green `#4CAF50` / orange `#FF7043` / gray `#90A4AE`
+보고서 **내용**(수치·사례)이 원문에 따라 달라지는 것은 정상이다 — 동일해야 하는 것은 구조·문체·
+검증 기준이다.

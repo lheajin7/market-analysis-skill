@@ -4,10 +4,6 @@
 **아래 스키마와 정확히 일치하는 키 이름으로** JSON을 생성한다.
 스키마가 다르면 리포트 생성기가 해당 항목을 조용히 건너뛴다.
 
-> `scripts/analyze_sections.py`(정규식 기반 자동 분석)는 빠른 초안용일 뿐, 정밀한 보고서에는
-> 사용하지 말 것 — 필드명이 리포트 생성기의 실제 스키마와 어긋나는 곳이 있어 본문에 공란·TOC
-> 잔여 텍스트가 남는다.
-
 생성 파일: `workspace/structured/sec1_market_overview.json` ~ `sec7_implications.json`,
 `master_dataset.json`(7개 파일 병합 + 최상위에 `tech_field`, `project_name` 추가).
 
