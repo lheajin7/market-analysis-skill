@@ -11,10 +11,13 @@
 
 - 어떤 보고서든 OK: PDF, HWP, HWPX, DOCX 모두 지원합니다.
 - 7개 섹션 자동 구성: 시장 개요·역학·생태계(경쟁구도 포함)·지역·세그먼트·R&D(특허 동향 포함)·시사점.
-- 차트 자동 생성: matplotlib/Pillow로 최대 12개 차트(문서 삽입 시 축소되어도 읽히도록 큰 폰트 적용)를 자동 생성합니다.
+- 차트 자동 생성: matplotlib/Pillow로 최대 13개 차트(공급망·가치사슬·생태계 맵 포함, 문서 삽입 시 축소되어도 읽히도록 큰 폰트 적용)를 자동 생성합니다.
+- 원본 그림 재활용: 원문에 공급망·가치사슬·생태계 맵 그림이 있으면 새로 합성하지 않고 원본을 그대로 삽입합니다.
 - 개조식/음슴체 출력: `~임`, `~됨`, `~전망됨` 형식의 보고서용 한글 문체로 작성합니다.
 - 표·그림마다 2~3줄 해설 자동 삽입.
 - 세그먼트 분류축이 보고서마다 달라도(예: 산업별/유형별/솔루션별 등 무엇이든) 자동으로 대응합니다.
+- 지표명도 보고서에 맞춰 자동 대응: 세그먼트 수치가 시장규모가 아니라 자본 약정액·투자액이거나,
+  R&D 지표가 특허가 아닌 다른 것이어도 축·표 헤더·절 제목이 원문 지표명으로 표기됩니다.
 - API 키 불필요: Claude Code가 직접 텍스트를 읽고 분석합니다. 외부 API 비용 없음.
 - 한글 폰트 동봉: 저장소 자체에 나눔고딕을 포함해, 어떤 PC에서도 별도 설치 없이 차트에 한글이 표시됩니다.
 - config.json으로 설정: 분석할 보고서 경로와 기술분야명만 바꾸면 바로 실행됩니다.
@@ -112,15 +115,15 @@ git config user.email "메일주소"
 
 ```
 STEP 0    config.json 읽기
-STEP 1+2  환경 초기화 + 텍스트·이미지 추출 (PDF/HWP/HWPX/DOCX → sec_*.txt)
-STEP 3    Claude Code 직접 분석 → 섹션별 JSON 생성 (SKILL.md의 스키마·문체 규칙 적용)
-STEP 4    차트 생성 (최대 12개 PNG)
+STEP 1+2  환경 초기화 + 텍스트·이미지 추출 (PDF/HWP/HWPX/DOCX → sec_*.txt, 원본 이미지)
+STEP 3    Claude Code 직접 분석 → 섹션별 JSON 생성 (references/step3-schema.md의 스키마·문체 규칙 적용)
+STEP 4    차트 생성 (최대 13개 PNG — 원문 그림이 있으면 재활용, 없으면 합성)
 STEP 5    HWPX + DOCX 보고서 동시 생성 (generate_reports.py)
 STEP 6    품질 검증 (구조 C00~C10, generate_reports.py에 포함됨)
 STEP 7    output/ 배포 + 실행 리포트(md) 생성 (finalize_report.py)
 ```
 
-자세한 각 단계별 규칙(JSON 스키마, 문체, 표/그림 설명 규칙, HWPX 겹침 방지 등)은 `SKILL.md`를 참고하세요.
+각 단계별 상세 규칙은 `SKILL.md`와 `references/`에 나뉘어 있습니다 — 아래 "문서 구조" 참고.
 
 ---
 
@@ -128,14 +131,18 @@ STEP 7    output/ 배포 + 실행 리포트(md) 생성 (finalize_report.py)
 
 ```
 market-analysis/
-├── SKILL.md              # 스킬 정의 (Claude가 /market-analysis 실행 시 읽는 파일)
+├── SKILL.md              # 스킬 정의 — 7단계 실행 흐름 (Claude가 /market-analysis 실행 시 읽는 파일)
+├── references/           # 상세 규칙 — 필요한 시점에만 읽힘 (아래 "문서 구조" 참고)
+│   ├── step3-schema.md       # STEP 3 JSON 스키마·작성 규칙 (매 실행 필수)
+│   ├── chart-design.md       # 차트 설계 원칙 (generate_charts.py 수정 시)
+│   └── document-format.md    # HWPX·DOCX 포맷 원칙 (문서 생성기 수정 시)
 ├── README.md
 ├── config.example.json   # 설정 템플릿 (커밋됨)
 ├── config.json           # 사용자 실제 설정 (.gitignore — 커밋 안 됨)
 ├── requirements.txt
 ├── .gitignore
 └── scripts/
-    ├── _common.py               # config.json → base_dir 로더 (모든 스크립트가 공용으로 사용)
+    ├── _common.py               # config.json → base_dir 로더 + 세그먼트 제목/지표명 규칙 (공용)
     ├── extract_input.py         # 텍스트 추출 (STEP 1+2)
     ├── extract_images.py        # 이미지 추출 (STEP 1+2)
     ├── analyze_sections.py      # 규칙 기반 자동 분석 — 빠른 초안용, 정밀 보고서엔 미권장 (STEP 3 대안)
@@ -150,6 +157,25 @@ market-analysis/
     └── assets/
         └── NanumGothic.ttf      # 동봉 한글 폰트 (SIL Open Font License)
 ```
+
+---
+
+## 문서 구조 (`SKILL.md` + `references/`)
+
+`SKILL.md`는 스킬 실행 시 **매번 통째로 컨텍스트에 로드**됩니다. 그래서 여기에는 7단계 실행 흐름만
+남기고, 상세 규칙은 `references/` 아래로 분리해 **필요한 시점에만 읽도록** 했습니다.
+
+| 문서 | 내용 | 언제 읽히나 |
+|------|------|------------|
+| `SKILL.md` | 7단계 실행 흐름, config 설정, 이식성 | 스킬 실행 시 항상 |
+| `references/step3-schema.md` | 섹션별 JSON 스키마, 문체·작성 규칙, 선택 필드 | **STEP 3 (매 실행)** |
+| `references/chart-design.md` | 폰트 크기 역산, 제목·범례 겹침 방지, 원본 이미지 재활용, 단위 하드코딩 금지 | `generate_charts.py` 수정 시 |
+| `references/document-format.md` | 여백·본문 폭, 캡션 자동 채번, HWPX linesegarray·"판독불가" 방지 | HWPX·DOCX 생성기 수정 시 |
+
+- **보고서를 생성하기만** 한다면 `SKILL.md` + `step3-schema.md`만 관여합니다.
+- 차트·문서 생성기 코드를 **고칠 때만** 나머지 두 문서가 읽힙니다. 두 문서에 적힌 원칙은 대부분
+  실측으로 발견된 버그(글씨 겹침, 범례가 막대를 가림, 한컴오피스 판독불가 등)에서 나온 것이므로,
+  해당 코드를 수정하기 전에 반드시 확인하세요.
 
 ---
 
@@ -174,9 +200,14 @@ market-analysis/
 - 한글 폰트가 저장소에 동봉되어 있어 시스템 폰트 설치 여부와 무관합니다.
 - 세그먼트 분류축(산업별/유형별/솔루션별 등)이 보고서마다 달라도 자동으로 대응합니다 — 코드에
   특정 보고서의 카테고리명이 하드코딩되어 있지 않습니다.
-- STEP 3의 분석·문체·검증 규칙은 `SKILL.md`에 고정되어 있어, Claude Code가 어떤 보고서를 분석하든
-  동일한 스키마·품질 기준(음슴체, 5줄 제한, 표/그림 설명, 경쟁구도 해석 등)을 적용합니다. 다만
-  보고서의 구체적 수치·사례 자체는 원문 내용에 따라 달라지는 것이 정상입니다.
+- **지표명·통화 단위도 하드코딩되어 있지 않습니다.** 세그먼트 수치가 시장규모가 아니거나(자본
+  약정액·투자액 등), R&D 지표가 특허가 아니거나, 통화가 달러가 아니어도(유로·엔 등) 원문의 지표명과
+  통화 기호가 차트 축·표 헤더·절 제목에 그대로 반영됩니다. 해당 선택 필드는
+  `references/step3-schema.md`를 참고하세요 (`value_label`, `market_share_metric`,
+  `market_share_desc`, `section_title`, `metric_label`, `currency_unit`).
+- STEP 3의 분석·문체·검증 규칙은 `references/step3-schema.md`에 고정되어 있어, Claude Code가 어떤
+  보고서를 분석하든 동일한 스키마·품질 기준(음슴체, 5줄 제한, 표/그림 설명, 경쟁구도 해석 등)을
+  적용합니다. 다만 보고서의 구체적 수치·사례 자체는 원문 내용에 따라 달라지는 것이 정상입니다.
 
 ---
 
