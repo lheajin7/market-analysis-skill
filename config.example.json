@@ -1,5 +1,7 @@
 {
-  "_comment": "이 파일을 config.json으로 복사한 뒤 아래 5개 값을 본인 환경에 맞게 수정하세요 (base_dir은 슬래시 '/' 사용 권장 — 역슬래시는 JSON에서 '\\\\'로 이스케이프해야 함).",
+  "_comment": "이 파일을 config.json으로 복사한 뒤 아래 5개 값을 본인 환경에 맞게 수정하세요. config.json은 .gitignore에 등록되어 있어 각자의 실제 경로가 커밋되지 않습니다.",
+  "_input_file": "base_dir 기준 상대경로. 지원 형식은 PDF/HWP/HWPX/DOCX 4종뿐입니다 — .md/.txt 등을 넣으면 STEP 2에서 '지원하지 않는 형식'으로 중단됩니다. base_dir 바로 아래(report.pdf)든 하위 폴더(workspace/input/report.pdf)든 무방합니다.",
+  "_base_dir": "슬래시(/) 사용을 권장합니다. 역슬래시를 쓰려면 JSON 규칙상 '\\\\'로 이스케이프해야 하며, 하나만 쓰면(\\2, \\시 등) 파싱 오류가 납니다. 이 폴더 아래에 workspace/와 skill/output/이 자동 생성됩니다.",
   "input_file": "report.pdf",
   "tech_field": "기술분야명 (예: 데이터센터 냉각)",
   "project_name": "과제명 (예: OOO 기술개발 시장분석)",

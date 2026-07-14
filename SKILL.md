@@ -55,6 +55,11 @@ SKILL.md는 **실행 흐름**만 담는다. 상세 규칙은 필요한 시점에
 2. 분석할 보고서 파일을 `base_dir` 아래 `input_file` 경로에 둔다 (`workspace/` 하위 폴더는
    `/market-analysis` 실행 시 자동 생성되므로 미리 만들 필요 없음).
 
+   - **입력은 PDF·HWP·HWPX·DOCX 4종만 지원한다.** `.md`/`.txt` 등 다른 형식을 넣으면
+     `extract_input.py`가 STEP 2에서 `지원하지 않는 형식: {ext}`를 출력하고 exit 1로 중단한다
+     (`subprocess.run(..., check=True)`가 이를 잡아 파이프라인이 즉시 멈추므로, 옛 데이터로
+     잘못된 보고서가 생성될 위험은 없다). 다른 형식의 원문은 먼저 PDF/DOCX로 변환할 것.
+
 3. Python 패키지 설치: `pip install -r requirements.txt`
 
 나눔고딕 폰트는 `scripts/assets/NanumGothic.ttf`로 저장소에 동봉되어 있어 별도 설치 없이 어떤
