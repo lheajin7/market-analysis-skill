@@ -134,8 +134,24 @@ FONT_PATH = next((p for p in _FONT_CANDS if os.path.exists(p)), None)
 
 def setup_mpl_font():
     if FONT_PATH:
-        fp = fm.FontProperties(fname=FONT_PATH)
-        plt.rcParams['font.family'] = fp.get_name()
+        # 번들 폰트를 matplotlib 폰트 매니저에 '파일 경로'로 직접 등록한다.
+        # 과거에는 get_name()으로 얻은 패밀리명만 rcParams['font.family']에 넣었는데,
+        # 이러면 그 폰트가 시스템에 설치돼 있지 않은 PC에서는 matplotlib이 이름을
+        # 해석하지 못해(폰트 매니저 목록에 없음) 조용히 DejaVu Sans로 폴백하고 한글이
+        # 전부 네모(tofu)로 렌더링된다(다른 PC에서 실측 확인 — 원본 PC는 NanumGothic이
+        # 설치돼 있어 우연히 동작했을 뿐). addfont로 파일 자체를 등록하면 시스템 설치
+        # 여부와 무관하게 어느 PC에서든 한글이 정상 출력된다.
+        try:
+            fm.fontManager.addfont(FONT_PATH)
+        except Exception:
+            pass
+        family = fm.FontProperties(fname=FONT_PATH).get_name()
+        plt.rcParams['font.family'] = family
+        # sans-serif 목록 맨 앞에도 등록 — 개별 아티스트가 'sans-serif'로 폴백해도
+        # 한글이 유지되도록 이중으로 안전장치를 둔다.
+        plt.rcParams['font.sans-serif'] = (
+            [family] + [f for f in plt.rcParams.get('font.sans-serif', []) if f != family]
+        )
     plt.rcParams['axes.unicode_minus'] = False
 
 
