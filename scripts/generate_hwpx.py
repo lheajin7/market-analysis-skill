@@ -1009,11 +1009,15 @@ def build_report(b: HWPXBuilder, md: dict,
         # 지표 라벨/단위는 데이터에 따라 가변 — 기본값은 특허 기준, 다른 지표면 스키마 필드로 덮어쓴다.
         metric_label = pt.get('metric_label', '특허 출원 건수')
         metric_unit  = pt.get('metric_unit', '건')
-        detail = pt.get('top_companies_detail', [])
-        if detail:
-            b.table(['기업', metric_label],
-                    [[d.get('company', ''), f"{d.get('count', 0):,}{metric_unit}"] for d in detail[:6]],
-                    title=f'기업별 {metric_label}')
+        # 표는 '국가별', 그림(V6_2)은 '기업별'로 분리해 분석한다 — 특허 동향은 국가
+        # 단위 경쟁 구도(표)와 기업 단위 경쟁 구도(그림)를 함께 보여줄 때 가장
+        # 유용하기 때문. 국가별 수치가 없으면 표는 생략하고(없는 수치를 지어내지
+        # 않음) 국가명 목록은 아래 불릿으로 계속 표시된다.
+        country_detail = pt.get('top_countries_detail', [])
+        if country_detail:
+            b.table(['국가', metric_label],
+                    [[d.get('country', ''), f"{d.get('count', 0):,}{metric_unit}"] for d in country_detail[:6]],
+                    title=f'국가별 {metric_label}')
         img('V6_2', f'기업별 {metric_label}',
             desc='가로축은 기업 간 큰 격차를 비교하기 쉽도록 로그 스케일로 표시함.')
         if pt.get('top_countries'):
